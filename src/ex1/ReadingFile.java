@@ -4,15 +4,15 @@ import java.io.*;
 
 public class ReadingFile {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 				
-		File fs = new File("/Users/marinasantana/eclipse-workspace/Prog2/src/ex1/test.txt");
+		File fs = new File("/Users/marinasantana/Desktop/test.txt");
 		String fileContent = readingFile(fs);
 		System.out.println(fileContent);
 	}
 
-	private static String readingFile(File file) {
+	private static String readingFile(File file) throws Exception {
 		String fileContent = null;
 		try {
 			FileReader fr = new FileReader(file);
@@ -21,13 +21,12 @@ public class ReadingFile {
 				String content = bf.readLine();
 				return content;
 			} catch(IOException e) {
-
+				throw e;
 			}
 			
 		} catch(FileNotFoundException e) {
-			
+			throw e;
 		}
-		return "";
 	}
 //		
 //		try {
