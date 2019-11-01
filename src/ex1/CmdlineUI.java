@@ -1,20 +1,26 @@
 package ex1;
 
-import com.sun.codemodel.internal.JForEach;
-
 import java.io.*;
 import java.util.Arrays;
 import static java.lang.System.*;
 
 public class CmdlineUI {
-	//TODO create test UI/Chat -> insert text, expect something else
-	//TODO append user input to file instead of overwriting it
+	//TODO write a constructor initialize to streams
 	//TODO removing some prints -> replacing them with string messages
-	//TODO catch case for when user inserts an unknown command in the method verifyUserInput
-	//TODO if user input is empty throw except/or handle case
 	//TODO organize throws/exceptions
+	//TODO use interface when initializing methods
 
-	public ChatImpl chat;
+	public Chat chat;
+	public static final String EXITCOMMAND = "exit";
+	public static final String WRITECOMMAND = "write";
+	public static final String READCOMMAND = "read";
+	public static final String EXITMESSAGE = "Exit.";
+	public static final String WRITINGMESSAGE = "Writing...";
+	public static final String READINGMESSAGE = "Reading...";
+	public static final String FILECONTENTMESSAGE = "File's content: ";
+	public static final String UNKNOWNCOMMANDMESSAGE = "Unknown command. Exit.";
+	public static final String UITOKEN = ">\t";
+
 	private String message;
 	private String[] rawMessageArray;
 	private String command;
@@ -43,28 +49,33 @@ public class CmdlineUI {
 		this.message = rawMessage;
 	}
 
-	CmdlineUI(){
+	public CmdlineUI(){
 		chat = new ChatImpl();
 	}
 
-	public void readCommands() throws Exception {
-		InputStreamReader isr = new InputStreamReader(System.in);
-		BufferedReader br = new BufferedReader(isr);
-
+	public void runUI(InputStream is, OutputStream os) throws Exception {
 		String commandLineString = "";
+		BufferedReader bf = new BufferedReader(new InputStreamReader(is));
 		boolean shellIsRunning = true;
 
 		try {
-			System.out.println("Enter exit to finish");
-			while(shellIsRunning) {
-				System.out.print("> ");
-				commandLineString = br.readLine();
-				this.setMessage(parseInput(commandLineString));
-				shellIsRunning = verifyUserInput();
-			}
+			StringBuilder userInstructions = new StringBuilder("Insert commands with this format ");
+			userInstructions.append("<command> [text (optional - depends on the command)]");
+			userInstructions.append("\n\nAvailable commands");
+			userInstructions.append("\n\tExit\tExits from the chat");
+			userInstructions.append("\n\tWrite\tWrite to a file. Example: write hello world");
+			userInstructions.append("\n\tRead\tRead from a file. Example: read\n\n");
 
+			System.out.print(userInstructions);
+			while(shellIsRunning) {
+				System.out.print(CmdlineUI.UITOKEN);
+				commandLineString = bf.readLine();
+				if (commandLineString == null) { break; }
+				this.setMessage(parseInput(commandLineString));
+				shellIsRunning = verifyUserInput(os);
+			}
 		} catch(IOException e) {
-			System.err.println("exception when reading from command line: " + e.getLocalizedMessage());
+			System.err.println("Exception when reading from command line: " + e.getLocalizedMessage());
 		}
 	}
 
@@ -82,35 +93,32 @@ public class CmdlineUI {
 		return message;
 	}
 
-	private boolean verifyUserInput() throws Exception {
-		String command = this.getCommand();
+	private boolean verifyUserInput(OutputStream os) throws Exception {
+		PrintStream ps = new PrintStream(os);
+
+		String command = this.getCommand().toLowerCase();
 		String message = this.getMessage();
-		final String stopCommand = "exit";
-		final String write = "write";
-		final String read = "read";
-		final String finishedMessage = "Exit.";
-		final String writingMessage = "Writing...";
-		final String readingMessage = "Reading...";
 
 		switch(command) {
-			case stopCommand:
-				out.println(finishedMessage);
+			case EXITCOMMAND:
+				ps.println(EXITMESSAGE);
 				return false;
-			case write:
-				out.println(writingMessage);
+			case WRITECOMMAND:
+				ps.println(WRITINGMESSAGE);
 				chat.writeMessage(message);
 				return true;
-			case read:
-				out.println(readingMessage);
+			case READCOMMAND:
+				ps.println(READINGMESSAGE);
 				this.showReceivedMessage(chat.readMessage());
 				return true;
 			default:
-				return true;
+				ps.println(UNKNOWNCOMMANDMESSAGE);
+				return false;
 		}
 	}
 
 	private void showReceivedMessage(String[] messages) {
-		out.println("File's Content: ");
+		out.println(FILECONTENTMESSAGE);
 		for (String word : messages) {
 			out.println(word);
 		}
@@ -119,7 +127,7 @@ public class CmdlineUI {
 	public static void main(String[] args) {
 		CmdlineUI ui = new CmdlineUI();
 		try {
-			ui.readCommands();
+			ui.runUI(System.in, System.out);
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
