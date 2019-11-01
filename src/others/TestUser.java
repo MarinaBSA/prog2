@@ -1,4 +1,4 @@
-package ex1;
+package others;
 
 import java.io.Serializable;
 

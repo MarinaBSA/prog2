@@ -1,4 +1,6 @@
-package ex1;
+package others;
+
+import others.TestUser;
 
 import java.io.*;
 
