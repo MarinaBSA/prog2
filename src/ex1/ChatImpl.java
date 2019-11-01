@@ -4,11 +4,14 @@ import java.io.*;
 import static java.lang.System.*;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 
 public class ChatImpl implements Chat {
 
-    private String fileLocation = "/Users/marinasantana/Desktop/testing.txt";
+    private String  fileLocation = "/Users/marinasantana/Desktop/testing.txt";
 
     @Override
     public void writeMessage(String message) throws Exception {
@@ -36,33 +39,46 @@ public class ChatImpl implements Chat {
             return errorArray;
 
         } catch(FileNotFoundException e) {
-            err.println("file could not be found");
+            err.println("File could not be found");
             exit(0);
             return errorArray;
         }
     }
 
     private FileOutputStream createFile(String filename) {
-        final String fileCreationMessage = "File successfully created.";
-        final String fileOpenMessage = "couldn't open file - fatal.";
-        try {
-            FileOutputStream fos = new FileOutputStream(filename);
-            out.println(fileCreationMessage);
-            return fos;
-        } catch (FileNotFoundException ex) {
-            err.println(fileOpenMessage);
-            exit(0);
-            return null;
+        File file = new File(this.fileLocation);
+        if (!file.isFile()) {
+            final String fileCreationMessage = "File successfully created.";
+            final String fileOpenMessage = "Couldn't open file - fatal.";
+            try {
+                FileOutputStream fos = new FileOutputStream(filename);
+                out.println(fileCreationMessage);
+                return fos;
+            } catch (FileNotFoundException ex) {
+                err.println(fileOpenMessage);
+                exit(0);
+                return null;
+            }
+        } else {
+            try {
+                FileOutputStream fos = new FileOutputStream(file);
+                return fos;
+            } catch (Exception e) {
+                System.err.println("Find existing file");
+                System.exit(0);
+            }
         }
+        return null;
     }
 
     private void writeToFile(FileOutputStream file, String usersInput) {
         byte[] usersInputBytes = null;
         usersInputBytes = usersInput.getBytes();        //String to byte[]
+
         try {
             file.write(usersInputBytes);
         } catch(IOException ex) {
-            err.println("could not write data.");
+            err.println("Could not write data.");
             exit(0);
         }
         out.println("Text successfully written to file.");
