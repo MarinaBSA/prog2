@@ -7,3 +7,5 @@ out
 *.iml
 bin
 lib
+META-INF
+src/META-INF
