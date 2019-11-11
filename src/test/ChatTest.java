@@ -13,7 +13,6 @@ public class ChatTest{
     final private String messageToWrite1 = "Houston we have a problem";
     final private String messageToWrite2 = "Test 1 2 3 - end of test";
 
-
     public ChatTest() {
         chat = new ChatImpl();
         UI = new CmdlineUI();
@@ -71,6 +70,18 @@ public class ChatTest{
         }
     }
 
+    @Test
+    public void UITestWrongCommand() throws Exception {
+        String foo = "nothing";
+        String command = "no command";
+        String shownMessage = UITestHelper(command, foo);
+        try {
+            Assert.assertEquals(shownMessage, CmdlineUI.UNKNOWNCOMMANDMESSAGE);
+        } catch (AssertionError e) {
+            System.err.println("Could not see the unknown command message after inserting unknown command ");
+        }
+    }
+
     //Helper methods///////////////////////////////////////////////////////////////////////////////////////////////////
 
     private String UITestHelper(String command, String messageToWrite) throws Exception {
@@ -79,7 +90,9 @@ public class ChatTest{
         //Write something in an array of bytes
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream outputStream = new DataOutputStream(baos);
-        outputStream.writeUTF(command + " " + messageToWrite);      //"write" exists now in an array of bytes coded as UTF inside baos
+
+        //"write" exists now in an array of bytes coded as UTF inside baos
+        outputStream.writeUTF(command + " " + messageToWrite);
 
         byte[] inputBytes = baos.toByteArray();
         is = new ByteArrayInputStream(inputBytes);
