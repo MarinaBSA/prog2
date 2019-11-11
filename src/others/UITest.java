@@ -9,7 +9,7 @@ public class UITest {
     public void uiTest() throws IOException {
         UI ui = new UI();
 
-       //InputStream myInputStream = null;
+       InputStream myInputStream = null;
 
         String unknownCommandString = "hallo";
         String exitString = UI.EXIT;
@@ -20,11 +20,12 @@ public class UITest {
 
         byte[] inputBytes = baos.toByteArray();
 
-        InputStream myInputStream = new ByteArrayInputStream(inputBytes);
+        ByteArrayInputStream bais = new ByteArrayInputStream(inputBytes);
+        myInputStream = bais;
 
         ByteArrayOutputStream myOutputStream = new ByteArrayOutputStream();
 
-        ui.userInputLoop(myInputStream, myOutputStream);
+        ui.userInputLoop(bais, myOutputStream);
         byte[] res = myOutputStream.toByteArray();
 
         ByteArrayInputStream outputIS = new ByteArrayInputStream(
