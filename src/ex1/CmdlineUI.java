@@ -11,17 +11,17 @@ public class CmdlineUI {
 	//TODO use interface when initializing methods
 
 	public Chat chat;
-	public static final String EXITCOMMAND = "exit";
-	public static final String WRITECOMMAND = "write";
-	public static final String READCOMMAND = "read";
-	public static final String CONNECTCOMMAND = "connect";
-	public static final String EXITMESSAGE = "Exit.";
-	public static final String WRITINGMESSAGE = "Writing...";
-	public static final String READINGMESSAGE = "Reading...";
-	public static final String FILECONTENTMESSAGE = "File's content: ";
-	public static final String UNKNOWNCOMMANDMESSAGE = "Unknown command. Exit.";
-	public static final String CONNECTMESSAGE = "Connected";
-	public static final String UITOKEN = ">\t";
+	public static final String EXIT_COMMAND = "exit";
+	public static final String WRITE_COMMAND = "write";
+	public static final String READ_COMMAND = "read";
+	public static final String CONNECT_COMMAND = "connect";
+	public static final String EXIT_MESSAGE = "Exit.";
+	public static final String WRITING_MESSAGE = "Writing...";
+	public static final String READING_MESSAGE = "Reading...";
+	public static final String FILE_CONTENT_MESSAGE = "File's content: ";
+	public static final String UNKNOWN_COMMAND_MESSAGE = "Unknown command. Exit.";
+	public static final String CONNECT_MESSAGE = "Connected";
+	public static final String UI_TOKEN = ">\t";
 
 	private String message;
 	private String[] rawMessageArray;
@@ -70,7 +70,7 @@ public class CmdlineUI {
 
 			System.out.print(userInstructions);
 			while(shellIsRunning) {
-				System.out.print(CmdlineUI.UITOKEN);
+				System.out.print(CmdlineUI.UI_TOKEN);
 				commandLineString = bf.readLine();
 				if (commandLineString == null) { break; }
 				this.setMessage(parseInput(commandLineString));
@@ -102,29 +102,29 @@ public class CmdlineUI {
 		String message = this.getMessage();
 
 		switch(command) {
-			case EXITCOMMAND:
-				ps.println(EXITMESSAGE);
+			case EXIT_COMMAND:
+				ps.println(EXIT_MESSAGE);
 				return false;
-			case WRITECOMMAND:
-				ps.println(WRITINGMESSAGE);
+			case WRITE_COMMAND:
+				ps.println(WRITING_MESSAGE);
 				chat.writeMessage(message);
 				return true;
-			case READCOMMAND:
-				ps.println(READINGMESSAGE);
+			case READ_COMMAND:
+				ps.println(READING_MESSAGE);
 				this.showReceivedMessage(chat.readMessage());
 				return true;
-			case CONNECTCOMMAND:
-				ps.println(CONNECTMESSAGE);
+			case CONNECT_COMMAND:
+				ps.println(CONNECT_MESSAGE);
 
 				return true;
 			default:
-				ps.println(UNKNOWNCOMMANDMESSAGE);
+				ps.println(UNKNOWN_COMMAND_MESSAGE);
 				return false;
 		}
 	}
 
 	private void showReceivedMessage(String[] messages) {
-		out.println(FILECONTENTMESSAGE);
+		out.println(FILE_CONTENT_MESSAGE);
 		for (String word : messages) {
 			out.println(word);
 		}

@@ -4,21 +4,25 @@ import java.io.*;
 import java.net.*;
 
 public class Client {
-    //private final static String IP = "46.114.32.244";
     private final static String IP = "127.0.0.1";
     public final static int PORT = 4242;
+    private static final String CLIENT_RUNNING_MESSAGE = "\tClient running...";
+    private static final String CONNECTED_TO_SERVER_MESSAGE = "\tConnected to server.";
+    private static final String MESSAGE_RECEIVED_MESSAGE = "\tClient running...";
+    private static final String MESSAGE_SENT = "\tMessage sent";
+
     private String messageReceived;
     Socket socket = null;
 
-    public Client() throws IOException {
-        System.out.println("Client running...");
+    public Client() {
+        System.out.println(CLIENT_RUNNING_MESSAGE);
         connect();
     }
 
     private void connect() {
         try {
             this.socket = new Socket(Client.IP, Client.PORT);
-            System.out.println("Connected to server.");
+            System.out.println(CONNECTED_TO_SERVER_MESSAGE);
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
@@ -29,9 +33,8 @@ public class Client {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
         messageReceived = reader.readLine();
-        String commandlineOutput = "Message received.\n";
 
-        System.out.println(commandlineOutput);
+        System.out.println(MESSAGE_RECEIVED_MESSAGE);
         System.out.format("Content:\t%s", messageReceived);
 
         return messageReceived;
@@ -41,13 +44,11 @@ public class Client {
         PrintWriter os = new PrintWriter(this.socket.getOutputStream(), true);
         os.println(messageToSend);
 
-        String commandlineOutput = "Message send";
-        System.out.format("%s:\t%s", commandlineOutput, messageToSend);
+        System.out.format("\n%s:\t%s", MESSAGE_SENT, messageToSend);
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         Client chatClient = new Client();
-
         try {
             chatClient.readMessage();
         } catch (IOException e) {

@@ -5,11 +5,11 @@ import java.io.*;
 
 public class Server {
     private ServerSocket serverSocket;
-    private final String serverRunning = "\tServer running...";
-    private final String messageReceived = "\tOne message received.";
-    private final String waitingForMessages = "\tWaiting for more messages..";
-    private final String connectionSuccessfull = "\tConnection with client successful";
-    private final String connectedToPort = "\tConnected to port ";
+    private static final String SERVER_RUNNING_MESSAGE = "\tServer running...";
+    private static final String MESSAGE_RECEIVED_MESSAGE = "\tOne message received.";
+    private static final String WAITING_MESSAGE = "\tWaiting for more messages..";
+    private static final String CONNECTION_OK_MESSAGE = "\tConnection with client successful";
+    private static final String CONNECTED_TO_PORT_MESSAGE = "\tConnected to port ";
     private String messageToRead;
     private String messageToSend;
     private BufferedReader is;
@@ -22,7 +22,7 @@ public class Server {
         if(!isConnected) {
             try {
                 this.serverSocket = new ServerSocket(Client.PORT);
-                System.out.println(this.connectedToPort + Client.PORT);
+                System.out.println(this.CONNECTED_TO_PORT_MESSAGE + Client.PORT);
             } catch (IOException e) {
                 System.err.println(e.getMessage());
             }
@@ -37,7 +37,7 @@ public class Server {
     }
 
     private void sendMessage(String messageToSend) throws IOException {
-        System.out.println(this.serverRunning);
+        System.out.println(this.SERVER_RUNNING_MESSAGE);
         connect();
         this.socket  = serverSocket.accept();
         this.setupStreams();
@@ -50,22 +50,22 @@ public class Server {
     }
 
     private void readMessage() throws IOException {
-        System.out.println(this.serverRunning);
+        System.out.println(this.SERVER_RUNNING_MESSAGE);
         connect();
         this.socket = this.serverSocket.accept();
-        System.out.println(this.connectionSuccessfull);
+        System.out.println(this.CONNECTION_OK_MESSAGE);
         isConnected = true;
         this.setupStreams();
 
         while(this.isRunning) {
             //TODO: use network interface here
             String messageToRead = this.is.readLine();
-            System.out.format(this.messageReceived);
+            System.out.format(this.MESSAGE_RECEIVED_MESSAGE);
             this.messageToRead = messageToRead;
 
             //Show message
             System.out.format("\n\t\tMessage: %s\n", this.messageToRead);
-            System.out.println(this.waitingForMessages);
+            System.out.println(this.WAITING_MESSAGE);
         }
     }
 
