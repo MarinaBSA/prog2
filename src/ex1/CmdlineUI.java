@@ -14,11 +14,13 @@ public class CmdlineUI {
 	public static final String EXITCOMMAND = "exit";
 	public static final String WRITECOMMAND = "write";
 	public static final String READCOMMAND = "read";
+	public static final String CONNECTCOMMAND = "connect";
 	public static final String EXITMESSAGE = "Exit.";
 	public static final String WRITINGMESSAGE = "Writing...";
 	public static final String READINGMESSAGE = "Reading...";
 	public static final String FILECONTENTMESSAGE = "File's content: ";
 	public static final String UNKNOWNCOMMANDMESSAGE = "Unknown command. Exit.";
+	public static final String CONNECTMESSAGE = "Connected";
 	public static final String UITOKEN = ">\t";
 
 	private String message;
@@ -110,6 +112,10 @@ public class CmdlineUI {
 			case READCOMMAND:
 				ps.println(READINGMESSAGE);
 				this.showReceivedMessage(chat.readMessage());
+				return true;
+			case CONNECTCOMMAND:
+				ps.println(CONNECTMESSAGE);
+
 				return true;
 			default:
 				ps.println(UNKNOWNCOMMANDMESSAGE);

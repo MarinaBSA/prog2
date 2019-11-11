@@ -4,9 +4,6 @@ import java.io.*;
 import static java.lang.System.*;
 
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 
 public class ChatImpl implements Chat {
@@ -14,7 +11,7 @@ public class ChatImpl implements Chat {
     private String  fileLocation = "/Users/marinasantana/Desktop/testing.txt";
 
     @Override
-    public void writeMessage(String message) throws Exception {
+    public void writeMessage(String message) {
         FileOutputStream os = createFile(this.fileLocation);
         assert os != null;
         this.writeToFile(os, message);
