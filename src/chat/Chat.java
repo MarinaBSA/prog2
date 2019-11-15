@@ -1,4 +1,4 @@
-package ex1;
+package chat;
 
 public interface Chat {
     void writeMessage(String message) throws Exception;

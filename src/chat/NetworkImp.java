@@ -1,4 +1,4 @@
-package ex1;
+package chat;
 
 import java.io.IOException;
 import java.io.InputStream;
