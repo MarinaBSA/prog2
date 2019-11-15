@@ -1,6 +1,6 @@
-import ex1.Chat;
-import ex1.ChatImpl;
-import ex1.CmdlineUI;
+import chat.Chat;
+import chat.ChatImpl;
+import chat.CmdlineUI;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -42,9 +42,9 @@ public class ChatTest{
 
     @Test
     public void UITestWriteCommand() throws Exception {
-        String shownMessage = UITestHelper(CmdlineUI.WRITECOMMAND, this.messageToWrite2);
+        String shownMessage = UITestHelper(CmdlineUI.WRITE_COMMAND, this.messageToWrite2);
         try {
-            Assert.assertEquals(shownMessage, CmdlineUI.WRITINGMESSAGE);
+            Assert.assertEquals(shownMessage, CmdlineUI.WRITING_MESSAGE);
         } catch (AssertionError e) {
             System.err.println("Could not see the writing message after inserting the write command");
         }
@@ -52,9 +52,9 @@ public class ChatTest{
 
     @Test
     public void UITestReadCommand() throws Exception {
-        String shownMessage = UITestHelper(CmdlineUI.READCOMMAND, this.messageToWrite2);
+        String shownMessage = UITestHelper(CmdlineUI.READ_COMMAND, this.messageToWrite2);
         try {
-            Assert.assertEquals(shownMessage, CmdlineUI.READINGMESSAGE);
+            Assert.assertEquals(shownMessage, CmdlineUI.READING_MESSAGE);
         } catch (AssertionError e) {
             System.err.println("Could not see the reading message after inserting the read command");
         }
@@ -62,9 +62,9 @@ public class ChatTest{
 
     @Test
     public void UITestExitCommand() throws Exception {
-        String shownMessage = UITestHelper(CmdlineUI.EXITCOMMAND, this.messageToWrite2);
+        String shownMessage = UITestHelper(CmdlineUI.EXIT_COMMAND, this.messageToWrite2);
         try {
-            Assert.assertEquals(shownMessage, CmdlineUI.EXITMESSAGE);
+            Assert.assertEquals(shownMessage, CmdlineUI.EXIT_MESSAGE);
         } catch (AssertionError e) {
             System.err.println("Could not see the exit message after inserting the exit command ");
         }
@@ -76,7 +76,7 @@ public class ChatTest{
         String command = "no command";
         String shownMessage = UITestHelper(command, foo);
         try {
-            Assert.assertEquals(shownMessage, CmdlineUI.UNKNOWNCOMMANDMESSAGE);
+            Assert.assertEquals(shownMessage, CmdlineUI.UNKNOWN_COMMAND_MESSAGE);
         } catch (AssertionError e) {
             System.err.println("Could not see the unknown command message after inserting unknown command ");
         }
