@@ -7,16 +7,27 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class NetworkImp implements Network {
+    final static int PORT = 4242;
+    final static String LOCAL_IP = "127.0.0.1";
+
+
+    public TCPPeer getPeer() {
+        return peer;
+    }
+
+    private TCPPeer peer = new TCPPeer();
+
     @Override
     public boolean connect(String IP, int PORT) throws IOException {
+        //System.out.println("made so far " + "\t" + IP + "\t" + PORT);
         Socket socket = new Socket(IP, PORT);
         return socket.isBound();
+        //return true;
     }
 
     @Override
-    public boolean open(int PORT) throws IOException {
+    public void open(int PORT) throws IOException {
         ServerSocket socket = new ServerSocket(PORT);
-        return socket.isBound();
     }
 
     @Override
@@ -34,4 +45,7 @@ public class NetworkImp implements Network {
         socket.close();
         return socket.isClosed();
     }
+
+
+
 }
