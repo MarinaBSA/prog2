@@ -6,13 +6,19 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 public interface Network {
-    boolean connect(String IP, int PORT) throws IOException;
 
-    boolean open(int PORT) throws IOException;
+    Socket open(int PORT) throws IOException;
+
+    Socket connect(String IP, int PORT) throws IOException;
 
     InputStream getInputStream(Socket socket) throws IOException;
 
     OutputStream getOutputStream(Socket socket) throws IOException;
 
-    boolean close(Socket socket) throws IOException;
+    void close(Socket socket) throws IOException;
+
+
+    //TODO: read about enums
+    //TODO: read about idempotent functions, bei mehrfachen Aufrufen passiert das gleiche -> idempotent
+    //TODO: Idempotent functions are static(read about bad side of static functions)
 }
