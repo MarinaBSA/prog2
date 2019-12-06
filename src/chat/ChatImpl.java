@@ -1,10 +1,6 @@
 package chat;
 
 import java.io.*;
-import static java.lang.System.*;
-
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 
 public class ChatImpl implements Chat {
 
@@ -13,7 +9,7 @@ public class ChatImpl implements Chat {
 
     @Override
     public void writeMessage(String message, OutputStream os) {
-        this.writer = new PrintWriter(new BufferedOutputStream(os));
+        this.writer = new PrintWriter(new BufferedOutputStream(os), true);
         this.writer.println(message);
     }
 
