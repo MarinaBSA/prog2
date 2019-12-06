@@ -1,58 +1,62 @@
 package chat;
 
 import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.Arrays;
 import static java.lang.System.*;
 
 public class CmdlineUI {
 	//TODO write a constructor initialize to streams
-	//TODO removing some prints -> replacing them with string messages
-	//TODO organize throws/exceptions
 	//TODO use interface when initializing methods
 
-	public Chat chat;
+	Chat chat;
+	Network network;
+	Socket serverSocket;
+	Socket clientSocket;
+
+	private String message;
+	private String command;
+
 	public static final String EXIT_COMMAND = "exit";
 	public static final String WRITE_COMMAND = "write";
 	public static final String READ_COMMAND = "read";
 	public static final String CONNECT_COMMAND = "connect";
-	public static final String EXIT_MESSAGE = "Exit.";
-	public static final String WRITING_MESSAGE = "Writing...";
-	public static final String READING_MESSAGE = "Reading...";
-	public static final String FILE_CONTENT_MESSAGE = "File's content: ";
-	public static final String UNKNOWN_COMMAND_MESSAGE = "Unknown command. Exit.";
-	public static final String CONNECT_MESSAGE = "Connected";
-	public static final String UI_TOKEN = ">\t";
+	public static final String OPEN_COMMAND = "open";
+	public static final String CLOSE_COMMAND = "close";
 
-	private String message;
-	private String[] rawMessageArray;
-	private String command;
+	public static final String EXIT_MESSAGE = "Exit.";
+	public static final String CONNECTED_MESSAGE = "Connected.";
+	public static final String MESSAGE_READ = "Message read.";
+	public static final String WROTE_MESSAGE = "Wrote message.";
+	public static final String CLOSED_MESSAGE = "Closed channel.";
+	public static final String UNKNOWN_COMMAND_MESSAGE = "Unknown command. Exit.";
+
+	public static final String WRITING_MESSAGE = "Writing message...";
+	public static final String READING_MESSAGE = "Reading message...";
+	public static final String CONNECTING_MESSAGE = "Connecting to server...";
+	public static final String OPENING_MESSAGE = "Opened as server.\nWaiting for a connection...";
+	public static final String CLOSING_MESSAGE = "Closing...";
+
+	public static final String UI_TOKEN = ">\t";
 
 	public String getCommand() {
 		return command;
 	}
-
 	public void setCommand(String command) {
 		this.command = command;
 	}
-
-	public String[] getRawMessageArray() {
-		return rawMessageArray;
-	}
-
-	public void setRawMessageArray(String[] rawMessageArray) {
-		this.rawMessageArray = rawMessageArray;
-	}
-
 	public String getMessage() {
 		return message;
 	}
-
 	public void setMessage(String rawMessage) {
 		this.message = rawMessage;
 	}
 
+
 	public CmdlineUI(){
-		chat = new ChatImpl();
+		this.chat = new ChatImpl();
+		this.network = new NetworkImpl();
 	}
 
 	public void runUI(InputStream is, OutputStream os) throws Exception {
@@ -61,12 +65,15 @@ public class CmdlineUI {
 		boolean shellIsRunning = true;
 
 		try {
-			StringBuilder userInstructions = new StringBuilder("Insert commands with this format ");
-			userInstructions.append("<command> [text (optional - depends on the command)]");
-			userInstructions.append("\n\nAvailable commands");
-			userInstructions.append("\n\tExit\tExits from the chat");
-			userInstructions.append("\n\tWrite\tWrite to a file. Example: write hello world");
-			userInstructions.append("\n\tRead\tRead from a file. Example: read\n\n");
+			String userInstructions = "Insert commands with this format " +
+					"<command> [text (optional - depends on the command)]" +
+					"\n\nAvailable commands" +
+					"\n\tExit\tExits from the chat" +
+					"\n\tWrite\tWrite a message to a TCP peer. Example: write hello world" +
+					"\n\tRead\tRead a message from a TCP peer. Example: read" +
+					"\n\tOpen\tOpen connection as a server to predefined port. Example: open" +
+					"\n\tConnect\tConnect to a local server in predefined port. Example: connect 127.0.0.1" +
+					"\n\tClose\tClose existing connection to TCP peer. Example: close\n\n";
 
 			System.out.print(userInstructions);
 			while(shellIsRunning) {
@@ -83,15 +90,13 @@ public class CmdlineUI {
 
 	//Separating command from the actual message out of the user's input.
 	private String parseInput(String input) {
-		//TODO: Do I really need this split("") and trim() ?
 		String[] rawMessageArray = input.trim().split(" ");
-		this.setRawMessageArray(rawMessageArray);
 
 		String command = rawMessageArray[0];
 		this.setCommand(command);
 
 		String message = String.join(" ", Arrays.copyOfRange(rawMessageArray, 1, rawMessageArray.length));
-		this.setMessage(message);
+		this.setMessage(message.trim());
 		return message;
 	}
 
@@ -107,26 +112,34 @@ public class CmdlineUI {
 				return false;
 			case WRITE_COMMAND:
 				ps.println(WRITING_MESSAGE);
-				chat.writeMessage(message);
+				this.chat.writeMessage(message, this.network.getOutputStream(this.clientSocket));
+				ps.println(WROTE_MESSAGE);
 				return true;
 			case READ_COMMAND:
 				ps.println(READING_MESSAGE);
-				this.showReceivedMessage(chat.readMessage());
+				this.setMessage(this.chat.readMessage(this.network.getInputStream(this.serverSocket)));
+				ps.println("Message:\t" + this.getMessage());
+				ps.println(MESSAGE_READ);
 				return true;
 			case CONNECT_COMMAND:
-				ps.println(CONNECT_MESSAGE);
-
+				ps.println(CONNECTING_MESSAGE);
+				this.clientSocket = this.network.connect(this.getMessage(), NetworkImpl.PORT);
+				ps.println(CONNECTED_MESSAGE);
 				return true;
+			case OPEN_COMMAND:
+				ps.println(OPENING_MESSAGE);
+				this.serverSocket = this.network.open(NetworkImpl.PORT);
+				ps.println(CONNECTED_MESSAGE);
+				return true;
+			case CLOSE_COMMAND:
+				ps.println(CLOSING_MESSAGE);
+				this.network.close(this.serverSocket);
+				ps.println(CLOSED_MESSAGE);
+				return false;
 			default:
 				ps.println(UNKNOWN_COMMAND_MESSAGE);
+				//TODO maybe return true to keep asking for the next commands
 				return false;
-		}
-	}
-
-	private void showReceivedMessage(String[] messages) {
-		out.println(FILE_CONTENT_MESSAGE);
-		for (String word : messages) {
-			out.println(word);
 		}
 	}
 
