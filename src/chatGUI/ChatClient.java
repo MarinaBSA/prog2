@@ -68,7 +68,13 @@ public class ChatClient {
         }
     }
 
+    private static void startServer() {
+        Server server = new Server();
+        server.connect();
+    }
+
     public static void main(String[] args) {
+        startServer();
         ChatClient client = new ChatClient();
         client.go();
     }
