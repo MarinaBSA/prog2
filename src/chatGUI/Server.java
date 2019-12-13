@@ -22,7 +22,7 @@ public class Server {
         if(!isConnected) {
             try {
                 this.serverSocket = new ServerSocket(Client.PORT);
-                System.out.println(this.CONNECTED_TO_PORT_MESSAGE + Client.PORT);
+                System.out.println(CONNECTED_TO_PORT_MESSAGE + Client.PORT);
             } catch (IOException e) {
                 System.err.println(e.getMessage());
             }
@@ -32,16 +32,15 @@ public class Server {
     private void setupStreams() throws IOException {
         //TODO: use network interface here
         this.os = new PrintWriter(new BufferedOutputStream(this.socket.getOutputStream()));
-        //printreader here ???
         this.is = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
     }
 
     private void sendMessage(String messageToSend) throws IOException {
-        System.out.println(this.SERVER_RUNNING_MESSAGE);
+        System.out.println(SERVER_RUNNING_MESSAGE);
         connect();
         this.socket  = serverSocket.accept();
         this.setupStreams();
-        isConnected = true;
+        this.isConnected = true;
         while(this.isRunning) {
             //TODO: use network interface here
             this.messageToSend = messageToSend;
@@ -50,22 +49,22 @@ public class Server {
     }
 
     private void readMessage() throws IOException {
-        System.out.println(this.SERVER_RUNNING_MESSAGE);
+        System.out.println(SERVER_RUNNING_MESSAGE);
         connect();
         this.socket = this.serverSocket.accept();
-        System.out.println(this.CONNECTION_OK_MESSAGE);
-        isConnected = true;
+        System.out.println(CONNECTION_OK_MESSAGE);
+        this.isConnected = true;
         this.setupStreams();
 
         while(this.isRunning) {
             //TODO: use network interface here
             String messageToRead = this.is.readLine();
-            System.out.format(this.MESSAGE_RECEIVED_MESSAGE);
+            System.out.format(MESSAGE_RECEIVED_MESSAGE);
             this.messageToRead = messageToRead;
 
             //Show message
             System.out.format("\n\t\tMessage: %s\n", this.messageToRead);
-            System.out.println(this.WAITING_MESSAGE);
+            System.out.println(WAITING_MESSAGE);
         }
     }
 
