@@ -12,11 +12,11 @@ public class Client {
     private static final String MESSAGE_SENT = "\tMessage sent";
 
     private String messageReceived;
-    Socket socket = null;
+    private Socket socket = null;
 
     public Client() {
         System.out.println(CLIENT_RUNNING_MESSAGE);
-        connect();
+        this.connect();
     }
 
     private void connect() {
