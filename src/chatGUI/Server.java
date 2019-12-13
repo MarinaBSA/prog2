@@ -18,7 +18,7 @@ public class Server {
     private boolean isRunning = true;
     private boolean isConnected = false;
 
-    private void connect() {
+    void connect() {
         if(!isConnected) {
             try {
                 this.serverSocket = new ServerSocket(Client.PORT);
