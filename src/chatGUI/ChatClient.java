@@ -15,23 +15,27 @@ public class ChatClient {
     private JTextField messageField;
     private JTextArea chatArea;
 
-    public ChatClient() throws IOException {
+
+    public ChatClient() {
         this.server = new Server();
         this.client = new Client();
     }
 
     public void go() {
+        String windowText = "ICQ is dead";
+        String textFieldText = "Insert message";
+        String btnText = "Send";
         //Window
         JFrame window = new JFrame();
-        window.setTitle("ICQ");
+        window.setTitle(windowText);
 
         //Button
-        JButton sendButton = new JButton("Send");
+        JButton sendButton = new JButton(btnText);
         sendButton.addActionListener(new sendButtonListener());
 
         //TextField
         messageField = new JTextField(20);
-        messageField.setToolTipText("Insert message");
+        messageField.setToolTipText(textFieldText);
 
         //TextArea
         chatArea = new JTextArea(20,30);
@@ -50,22 +54,21 @@ public class ChatClient {
 
 
     private class sendButtonListener implements ActionListener {
-        private String messageToSend;
-
         @Override
         public void actionPerformed(ActionEvent e) {
-            this.messageToSend = messageField.getText();
+            String messageToSend;
+            messageToSend = messageField.getText();
 
             try {
-                client.sendMessage(this.messageToSend);
-                chatArea.setText(this.messageToSend);
+                client.sendMessage(messageToSend);
+                chatArea.setText(messageToSend);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         ChatClient client = new ChatClient();
         client.go();
     }
