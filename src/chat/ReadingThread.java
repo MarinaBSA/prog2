@@ -30,7 +30,8 @@ public class ReadingThread implements Runnable {
             while(isRunning) {
                 assert os != null;
                 while((message = os.readLine()) != null) {
-                    System.out.println("Message received: " + message);
+                    //TODO use chat.readMessage here
+                    System.out.println(this.messageReceivedText + message);
                     System.out.print(this.messageToken);
                 }
             }
