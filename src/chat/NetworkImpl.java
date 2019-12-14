@@ -28,6 +28,7 @@ public class NetworkImpl implements Network {
         if(isConnected) {
             throw new IOException("There is already a connection open at the moment");
         }
+
         ServerSocket server = new ServerSocket(PORT);
         this.isConnected = true;
         this.socket = server.accept();

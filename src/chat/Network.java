@@ -6,7 +6,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 public interface Network {
-
     Socket open(int PORT) throws IOException;
 
     Socket connect(String IP, int PORT) throws IOException;
@@ -16,7 +15,6 @@ public interface Network {
     OutputStream getOutputStream(Socket socket) throws IOException;
 
     void close(Socket socket) throws IOException;
-
 
     //TODO: read about enums
     //TODO: read about idempotent functions, bei mehrfachen Aufrufen passiert das gleiche -> idempotent
