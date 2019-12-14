@@ -1,19 +1,18 @@
 package chat;
 
 import java.io.*;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
-import static java.lang.System.*;
 
 public class CmdlineUI {
 	//TODO write a constructor initialize to streams
 	//TODO use interface when initializing methods
 
-	Chat chat;
-	Network network;
-	Socket serverSocket;
-	Socket clientSocket;
+	public Chat chat;
+	public Network network;
+	private Socket sock;
+	//private Socket serverSocket;
+	//private Socket clientSocket;
 
 	private String message;
 	private String command;
@@ -53,6 +52,8 @@ public class CmdlineUI {
 		this.message = rawMessage;
 	}
 
+	private boolean isConnected = false;
+	private boolean isClient = false;
 
 	public CmdlineUI(){
 		this.chat = new ChatImpl();
@@ -63,20 +64,25 @@ public class CmdlineUI {
 		String commandLineString = "";
 		BufferedReader bf = new BufferedReader(new InputStreamReader(is));
 		boolean shellIsRunning = true;
-
+		String userInstructions = "Insert commands with this format " +
+				"<command> [text (optional - depends on the command)]" +
+				"\n\nAvailable commands" +
+				"\n\tExit\tExits from the chat" +
+				"\n\tWrite\tWrite a message to a TCP peer. Example: write hello world" +
+				"\n\tRead\tRead a message from a TCP peer. Example: read" +
+				"\n\tOpen\tOpen connection as a server to predefined port. Example: open" +
+				"\n\tConnect\tConnect to a local server in predefined port. Example: connect 127.0.0.1" +
+				"\n\tClose\tClose existing connection to TCP peer. Example: close\n\n";
 		try {
-			String userInstructions = "Insert commands with this format " +
-					"<command> [text (optional - depends on the command)]" +
-					"\n\nAvailable commands" +
-					"\n\tExit\tExits from the chat" +
-					"\n\tWrite\tWrite a message to a TCP peer. Example: write hello world" +
-					"\n\tRead\tRead a message from a TCP peer. Example: read" +
-					"\n\tOpen\tOpen connection as a server to predefined port. Example: open" +
-					"\n\tConnect\tConnect to a local server in predefined port. Example: connect 127.0.0.1" +
-					"\n\tClose\tClose existing connection to TCP peer. Example: close\n\n";
-
 			System.out.print(userInstructions);
 			while(shellIsRunning) {
+				//Start read thread
+				if(this.isConnected) {
+					//Socket sock = this.isClient ? this.clientSocket : this.serverSocket;
+					Thread readingJob = new Thread(new ReadingThread(this.sock));
+					readingJob.start();
+				}
+
 				System.out.print(CmdlineUI.UI_TOKEN);
 				commandLineString = bf.readLine();
 				if (commandLineString == null) { break; }
@@ -112,28 +118,36 @@ public class CmdlineUI {
 				return false;
 			case WRITE_COMMAND:
 				ps.println(WRITING_MESSAGE);
-				this.chat.writeMessage(message, this.network.getOutputStream(this.clientSocket));
+				//this.chat.writeMessage(message, this.network.getOutputStream(this.clientSocket));
+				this.chat.writeMessage(message, this.network.getOutputStream(this.sock));
 				ps.println(WROTE_MESSAGE);
 				return true;
 			case READ_COMMAND:
 				ps.println(READING_MESSAGE);
-				this.setMessage(this.chat.readMessage(this.network.getInputStream(this.serverSocket)));
+				//this.setMessage(this.chat.readMessage(this.network.getInputStream(this.serverSocket)));
+				this.setMessage(this.chat.readMessage(this.network.getInputStream(this.sock)));
 				ps.println("Message:\t" + this.getMessage());
 				ps.println(MESSAGE_READ);
 				return true;
 			case CONNECT_COMMAND:
 				ps.println(CONNECTING_MESSAGE);
-				this.clientSocket = this.network.connect(this.getMessage(), NetworkImpl.PORT);
+				//this.clientSocket = this.network.connect(this.getMessage(), NetworkImpl.PORT);
+				this.sock = this.network.connect(this.getMessage(), NetworkImpl.PORT);
 				ps.println(CONNECTED_MESSAGE);
+				this.isClient = true;
+				this.isConnected = true;
 				return true;
 			case OPEN_COMMAND:
 				ps.println(OPENING_MESSAGE);
-				this.serverSocket = this.network.open(NetworkImpl.PORT);
+				//this.serverSocket = this.network.open(NetworkImpl.PORT);
+				this.sock = this.network.open(NetworkImpl.PORT);
+				this.isConnected = true;
 				ps.println(CONNECTED_MESSAGE);
 				return true;
 			case CLOSE_COMMAND:
 				ps.println(CLOSING_MESSAGE);
-				this.network.close(this.serverSocket);
+				//this.network.close(this.serverSocket);
+				this.network.close(this.sock);
 				ps.println(CLOSED_MESSAGE);
 				return false;
 			default:
