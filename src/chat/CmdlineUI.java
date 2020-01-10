@@ -11,8 +11,6 @@ public class CmdlineUI {
 	public Chat chat;
 	public Network network;
 	private Socket sock;
-	//private Socket serverSocket;
-	//private Socket clientSocket;
 
 	private String message;
 	private String command;
@@ -26,7 +24,7 @@ public class CmdlineUI {
 
 	public static final String EXIT_MESSAGE = "Exit.";
 	public static final String CONNECTED_MESSAGE = "Connected.";
-	public static final String MESSAGE_READ = "Message read.";
+	//public static final String MESSAGE_READ = "Message read.";
 	public static final String WROTE_MESSAGE = "Wrote message.";
 	public static final String CLOSED_MESSAGE = "Closed channel.";
 	public static final String UNKNOWN_COMMAND_MESSAGE = "Unknown command. Exit.";
@@ -40,7 +38,7 @@ public class CmdlineUI {
 	public static final String UI_TOKEN = ">\t";
 
 	public String getCommand() {
-		return command;
+		return this.command;
 	}
 	public void setCommand(String command) {
 		this.command = command;
@@ -68,8 +66,8 @@ public class CmdlineUI {
 				"<command> [text (optional - depends on the command)]" +
 				"\n\nAvailable commands" +
 				"\n\tExit\tExits from the chat" +
-				"\n\tWrite\tWrite a message to a TCP peer. Example: write hello world" +
-				"\n\tRead\tRead a message from a TCP peer. Example: read" +
+				"\n\tWrite\tWrite a message to a TCP peer. Example: write Hello world" +
+				//"\n\tRead\tRead a message from a TCP peer. Example: read" +
 				"\n\tOpen\tOpen connection as a server to predefined port. Example: open" +
 				"\n\tConnect\tConnect to a local server in predefined port. Example: connect 127.0.0.1" +
 				"\n\tClose\tClose existing connection to TCP peer. Example: close\n\n";
@@ -78,8 +76,7 @@ public class CmdlineUI {
 			while(shellIsRunning) {
 				//Start read thread
 				if(this.isConnected) {
-					//Socket sock = this.isClient ? this.clientSocket : this.serverSocket;
-					Thread readingJob = new Thread(new ReadingThread(this.sock));
+					Thread readingJob = new Thread(new ReadingThread(this.sock, os));
 					readingJob.start();
 				}
 
@@ -108,7 +105,6 @@ public class CmdlineUI {
 
 	private boolean verifyUserInput(OutputStream os) throws Exception {
 		PrintStream ps = new PrintStream(os);
-
 		String command = this.getCommand().toLowerCase();
 		String message = this.getMessage();
 
@@ -118,20 +114,18 @@ public class CmdlineUI {
 				return false;
 			case WRITE_COMMAND:
 				ps.println(WRITING_MESSAGE);
-				//this.chat.writeMessage(message, this.network.getOutputStream(this.clientSocket));
 				this.chat.writeMessage(message, this.network.getOutputStream(this.sock));
 				ps.println(WROTE_MESSAGE);
 				return true;
-			case READ_COMMAND:
+			/*case READ_COMMAND:
+				//TODO Delete - the read command does not make sense here anymore
 				ps.println(READING_MESSAGE);
-				//this.setMessage(this.chat.readMessage(this.network.getInputStream(this.serverSocket)));
 				this.setMessage(this.chat.readMessage(this.network.getInputStream(this.sock)));
 				ps.println("Message:\t" + this.getMessage());
 				ps.println(MESSAGE_READ);
-				return true;
+				return true;*/
 			case CONNECT_COMMAND:
 				ps.println(CONNECTING_MESSAGE);
-				//this.clientSocket = this.network.connect(this.getMessage(), NetworkImpl.PORT);
 				this.sock = this.network.connect(this.getMessage(), NetworkImpl.PORT);
 				ps.println(CONNECTED_MESSAGE);
 				this.isClient = true;
@@ -139,20 +133,18 @@ public class CmdlineUI {
 				return true;
 			case OPEN_COMMAND:
 				ps.println(OPENING_MESSAGE);
-				//this.serverSocket = this.network.open(NetworkImpl.PORT);
 				this.sock = this.network.open(NetworkImpl.PORT);
 				this.isConnected = true;
 				ps.println(CONNECTED_MESSAGE);
 				return true;
 			case CLOSE_COMMAND:
 				ps.println(CLOSING_MESSAGE);
-				//this.network.close(this.serverSocket);
 				this.network.close(this.sock);
 				ps.println(CLOSED_MESSAGE);
 				return false;
 			default:
 				ps.println(UNKNOWN_COMMAND_MESSAGE);
-				//TODO maybe return true to keep asking for the next commands
+				//TODO Return true to keep asking for the next commands
 				return false;
 		}
 	}
@@ -165,5 +157,8 @@ public class CmdlineUI {
 			System.err.println(e.getMessage());
 		}
 	}
+
+
+
 }
 
