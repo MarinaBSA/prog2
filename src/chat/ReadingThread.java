@@ -2,19 +2,20 @@ package chat;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.concurrent.TimeUnit;
 
 public class ReadingThread implements Runnable {
 
     private Socket serverSocket;
     private Chat chat;
+    private OutputStream writer;
     private boolean isRunning = true;
 
     private final String messageToken = ">\t";
     private final String messageReceivedText = "Message received: ";
 
-    public ReadingThread(Socket serverSocket) {
+    public ReadingThread(Socket serverSocket, OutputStream writer) {
         this.serverSocket = serverSocket;
+        this.writer = writer;
     }
 
     @Override
@@ -28,11 +29,11 @@ public class ReadingThread implements Runnable {
         }
         try {
             while(isRunning) {
+                PrintStream ps = new PrintStream(writer);
                 assert os != null;
                 while((message = os.readLine()) != null) {
-                    //TODO use chat.readMessage here
-                    System.out.println(this.messageReceivedText + message);
-                    System.out.print(this.messageToken);
+                    ps.println(this.messageReceivedText + message);
+                    ps.print(this.messageToken);
                 }
             }
         } catch (IOException e) {
