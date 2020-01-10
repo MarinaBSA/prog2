@@ -9,3 +9,4 @@ bin
 lib
 META-INF
 src/META-INF
+.DS_Store
