@@ -82,11 +82,6 @@ public class ChatTest{
         }
     }
 
-    @Test
-    public void ConnectAsClient() {
-        String command = "connect";
-    }
-
     //Helper methods///////////////////////////////////////////////////////////////////////////////////////////////////
 
     private String UITestHelper(String command, String messageToWrite) throws Exception {
